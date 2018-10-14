@@ -34,6 +34,23 @@ public class Uploader {
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
+	public static void main(String... args) throws IOException, GeneralSecurityException {
+        // Build a new authorized API client service.
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+        // Upload files.
+		File fileMetadata = new File();
+		fileMetadata.setName("logo.png");
+		java.io.File filePath = new java.io.File("logo.png");
+		FileContent mediaContent = new FileContent("image/png", filePath);
+		File file = service.files().create(fileMetadata, mediaContent)
+		.setFields("id")
+		.execute();
+    }
+
     /**
      * Creates an authorized Credential object.
      * @param HTTP_TRANSPORT The network HTTP Transport.
@@ -54,20 +71,7 @@ public class Uploader {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-
-        // Upload files.
-		File fileMetadata = new File();
-		fileMetadata.setName("logo.png");
-		java.io.File filePath = new java.io.File("logo.png");
-		FileContent mediaContent = new FileContent("image/png", filePath);
-		File file = service.files().create(fileMetadata, mediaContent)
-		.setFields("id")
-		.execute();
-    }
 }
+
+
+
